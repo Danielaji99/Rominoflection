@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="Rominoflect" content="One Question per day" />
+        <title>Daily Reflection</title>
+        <!-- We'll add CSS link here later -->
+    </head>
+    <body>
+        <!-- Main app container -->
+        <main id="app">
+            <!-- Header: Streak display -->
+            <header id="header">
+                <div id="streak-display">
+                    <span id="current-streak">0</span>
+                    <span> day streak</span>
+                </div>
+                <div id="longest-streak">
+                    Longest: <span id="longest-streak-value">0</span> days
+                </div>
+            </header>
+
+            <!-- Question section -->
+            <section id="question-section">
+                <h1 id="question-text">Loading your question...</h1>
+                <time id="question-date"></time>
+            </section>
+
+            <!-- Reflection textarea -->
+            <section id="reflection-section">
+                <label for="reflection-input" class="visually-hidden">
+                    Your reflection
+                </label>
+                <textarea
+                    id="reflection-input"
+                    placeholder="Take your time. Your thoughts are private and saved automatically."
+                    rows="10"
+                ></textarea>
+
+                <!-- Auto-save indicator -->
+                <div id="save-status" aria-live="polite">
+                    <span id="save-message"></span>
+                </div>
+            </section>
+
+            <!-- History link (we'll build this later) -->
+            <footer id="footer">
+                <button id="history-toggle">View Past Reflections</button>
+            </footer>
+        </main>
+
+        <!-- Hidden history panel (initially hidden with CSS) -->
+        <aside id="history-panel" hidden>
+            <header>
+                <h2>Past Reflections</h2>
+                <button id="history-close">Close</button>
+            </header>
+            <div id="history-list">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </aside>
+
+        <!-- Scripts load last so DOM is ready -->
+        <script src="js/data.js"></script>
+        <script src="js/state.js"></script>
+        <script src="js/app.js"></script>
+        <script src="js/ui.js"></script>
+    </body>
+</html>
