@@ -1,9 +1,3 @@
-/**
- * Application Layer
- * Contains business logic and orchestrates state + UI
- * Does NOT manipulate DOM directly (that's ui.js responsibility)
- */
-
 // Application state (loaded on init)
 let appState = null;
 
