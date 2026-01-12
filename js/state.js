@@ -190,3 +190,42 @@ function updateQuestionIfNeeded(state) {
 
   return state;
 }
+
+// Clear all app data (nuclear option for corrupted state)
+
+function clearAllData() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    return true;
+  } catch (error) {
+    console.error("Error clearing data:", error);
+    return false;
+  }
+}
+
+// Export all data as JSON string
+
+function exportData() {
+  const state = loadState();
+  return JSON.stringify(state, null, 2); // Pretty print with 2-space indent
+}
+
+// Import data from JSON string
+
+function importData(jsonString) {
+  try {
+    const data = JSON.parse(jsonString);
+
+    // Validate structure
+    if (!data.reflections || !data.streak) {
+      throw new Error("Invalid data structure");
+    }
+
+    // Save imported data
+    saveState(data);
+    return true;
+  } catch (error) {
+    console.error("Error importing data:", error);
+    return false;
+  }
+}

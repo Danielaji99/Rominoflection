@@ -45,9 +45,34 @@
                 </div>
             </section>
 
-            <!-- History link (we'll build this later) -->
             <footer id="footer">
                 <button id="history-toggle">View Past Reflections</button>
+
+                <details id="settings">
+                    <summary>Settings & Data</summary>
+                    <div class="settings-content">
+                        <button id="export-data">Export All Data</button>
+
+                        <label for="import-data-input" class="import-label">
+                            Import Data
+                            <input
+                                type="file"
+                                id="import-data-input"
+                                accept=".json"
+                                hidden
+                            />
+                        </label>
+
+                        <button id="clear-data" class="danger-button">
+                            Clear All Data
+                        </button>
+
+                        <p class="settings-note">
+                            Your reflections are stored locally in your browser.
+                            Export regularly to keep a backup.
+                        </p>
+                    </div>
+                </details>
             </footer>
         </main>
 

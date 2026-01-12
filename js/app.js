@@ -61,6 +61,29 @@ function setupEventListeners() {
   if (historyClose) {
     historyClose.addEventListener("click", handleHistoryClose);
   }
+
+  // Export data button
+  const exportBtn = document.getElementById("export-data");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", handleExportData);
+  }
+
+  // Import data input
+  const importInput = document.getElementById("import-data-input");
+  if (importInput) {
+    importInput.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleImportData(file);
+      }
+    });
+  }
+
+  // Clear data button
+  const clearBtn = document.getElementById("clear-data");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", handleClearData);
+  }
 }
 
 /**
@@ -178,4 +201,71 @@ if (document.readyState === "loading") {
 } else {
   // DOM already loaded
   initApp();
+}
+// Handle data export
+
+function handleExportData() {
+  const jsonData = exportData();
+  const blob = new Blob([jsonData], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  // Create temporary download link
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `reflections-${getTodayDate()}.json`;
+
+  // Trigger download
+  document.body.appendChild(link);
+  link.click();
+
+  // Cleanup
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showNotification("Data exported successfully!");
+}
+
+// Handle data import
+
+function handleImportData(file) {
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    const jsonString = event.target.result;
+    const success = importData(jsonString);
+
+    if (success) {
+      showNotification("Data imported successfully!");
+      // Reload the app with new data
+      location.reload();
+    } else {
+      showNotification("Import failed. Please check the file format.", "error");
+    }
+  };
+
+  reader.onerror = function () {
+    showNotification("Error reading file.", "error");
+  };
+
+  reader.readAsText(file);
+}
+
+// Handle clear data request
+// Shows confirmation before clearing
+
+function handleClearData() {
+  const confirmed = confirm(
+    "Are you sure you want to delete all your reflections? This cannot be undone.\n\n" +
+      "Consider exporting your data first.",
+  );
+
+  if (confirmed) {
+    const success = clearAllData();
+    if (success) {
+      showNotification("All data cleared.");
+      location.reload();
+    } else {
+      showNotification("Error clearing data.", "error");
+    }
+  }
 }

@@ -83,7 +83,6 @@ function showSaveStatus(status) {
       break;
   }
 }
-
 /**
  * Show history panel with past reflections
  * @param {Array} reflections - Array of reflection objects
@@ -97,10 +96,18 @@ function showHistoryPanel(reflections) {
   // Clear existing content
   historyList.innerHTML = "";
 
-  // If no reflections, show message
+  // If no reflections, show empty state
   if (reflections.length === 0) {
-    historyList.innerHTML =
-      "<p>No past reflections yet. Start writing today!</p>";
+    historyList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📝</div>
+        <h3 class="empty-state-title">No reflections yet</h3>
+        <p class="empty-state-description">
+          Your reflections will appear here as you write them.<br>
+          Start by answering today's question.
+        </p>
+      </div>
+    `;
     panel.removeAttribute("hidden");
     return;
   }
@@ -182,4 +189,37 @@ function formatDateForDisplay(dateString) {
     day: "numeric",
   };
   return date.toLocaleDateString("en-US", options);
+}
+
+// Show notification message
+
+function showNotification(message, type = "success") {
+  // Remove existing notification if any
+  const existing = document.getElementById("notification");
+  if (existing) {
+    existing.remove();
+  }
+
+  // Create notification element
+  const notification = document.createElement("div");
+  notification.id = "notification";
+  notification.className = `notification notification-${type}`;
+  notification.textContent = message;
+  notification.setAttribute("role", "status");
+  notification.setAttribute("aria-live", "polite");
+
+  document.body.appendChild(notification);
+
+  // Animate in
+  setTimeout(() => {
+    notification.classList.add("notification-visible");
+  }, 10);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.classList.remove("notification-visible");
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  }, 3000);
 }
