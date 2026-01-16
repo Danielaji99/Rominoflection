@@ -229,3 +229,40 @@ function importData(jsonString) {
     return false;
   }
 }
+/**
+ * Get saved theme preference
+ * @returns {string} 'light' or 'dark'
+ */
+function getSavedTheme() {
+  try {
+    return localStorage.getItem("theme") || "light";
+  } catch (error) {
+    return "light";
+  }
+}
+
+/**
+ * Save theme preference
+ * @param {string} theme - 'light' or 'dark'
+ */
+function saveTheme(theme) {
+  try {
+    localStorage.setItem("theme", theme);
+  } catch (error) {
+    console.error("Error saving theme:", error);
+  }
+}
+
+/**
+ * Detect system theme preference
+ * @returns {string} 'light' or 'dark'
+ */
+function getSystemTheme() {
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    return "dark";
+  }
+  return "light";
+}

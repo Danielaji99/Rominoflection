@@ -6,7 +6,6 @@
         <meta name="Rominoflect" content="One Question per day" />
         <link rel="stylesheet" href="css/styles.css" />
         <title>Rominoflect</title>
-
     </head>
     <body>
         <!-- Main app container -->
@@ -17,8 +16,20 @@
                     <span id="current-streak">0</span>
                     <span> day streak</span>
                 </div>
-                <div id="longest-streak">
-                    Longest: <span id="longest-streak-value">0</span> days
+
+                <div style="display: flex; gap: 1rem; align-items: center">
+                    <div id="longest-streak">
+                        Longest: <span id="longest-streak-value">0</span> days
+                    </div>
+
+                    <!-- Theme toggle button -->
+                    <button
+                        id="theme-toggle"
+                        aria-label="Toggle dark mode"
+                        title="Toggle theme"
+                    >
+                        <span id="theme-icon">🌙</span>
+                    </button>
                 </div>
             </header>
 

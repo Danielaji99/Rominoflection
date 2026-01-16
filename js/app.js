@@ -16,6 +16,9 @@ const AUTO_SAVE_DELAY = 1000; // 1 second after user stops typing
  * Called when DOM is ready
  */
 function initApp() {
+  // Initialize theme FIRST (before rendering UI)
+  initTheme();
+
   // Load saved state
   appState = loadState();
 
@@ -43,7 +46,7 @@ function initApp() {
     question: question,
     reflection: reflectionText,
     streak: appState.streak,
-    date: getTodayDate()
+    date: getTodayDate(),
   });
 
   // Set up event listeners
@@ -51,9 +54,9 @@ function initApp() {
 
   // Log for debugging
   if (isNewDay) {
-    console.log('New day detected - question rotated');
+    console.log("New day detected - question rotated");
   }
-  console.log('App initialized:', appState);
+  console.log("App initialized:", appState);
 }
 
 /**
@@ -61,45 +64,50 @@ function initApp() {
  */
 function setupEventListeners() {
   // Reflection textarea - auto-save on input
-  const textarea = document.getElementById('reflection-input');
+  const textarea = document.getElementById("reflection-input");
   if (textarea) {
-    textarea.addEventListener('input', handleReflectionInput);
+    textarea.addEventListener("input", handleReflectionInput);
   }
 
   // History toggle button
-  const historyToggle = document.getElementById('history-toggle');
+  const historyToggle = document.getElementById("history-toggle");
   if (historyToggle) {
-    historyToggle.addEventListener('click', handleHistoryToggle);
+    historyToggle.addEventListener("click", handleHistoryToggle);
   }
 
   // History close button
-  const historyClose = document.getElementById('history-close');
+  const historyClose = document.getElementById("history-close");
   if (historyClose) {
-    historyClose.addEventListener('click', handleHistoryClose);
+    historyClose.addEventListener("click", handleHistoryClose);
   }
 
   // Export data button
-  const exportBtn = document.getElementById('export-data');
+  const exportBtn = document.getElementById("export-data");
   if (exportBtn) {
-    exportBtn.addEventListener('click', handleExportData);
+    exportBtn.addEventListener("click", handleExportData);
   }
 
-  // Import data input
-  const importInput = document.getElementById('import-data-input');
-  if (importInput) {
-    importInput.addEventListener('change', function(event) {
-      const file = event.target.files[0];
-      if (file) {
-        handleImportData(file);
-      }
-    });
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
   }
+}
 
-  // Clear data button
-  const clearBtn = document.getElementById('clear-data');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', handleClearData);
-  }
+// Import data input
+const importInput = document.getElementById("import-data-input");
+if (importInput) {
+  importInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      handleImportData(file);
+    }
+  });
+}
+
+// Clear data button
+const clearBtn = document.getElementById("clear-data");
+if (clearBtn) {
+  clearBtn.addEventListener("click", handleClearData);
 }
 
 /**
@@ -116,7 +124,7 @@ function handleReflectionInput(event) {
   }
 
   // Show "saving..." indicator immediately
-  showSaveStatus('saving');
+  showSaveStatus("saving");
 
   // Set new timer to save after user stops typing
   autoSaveTimer = setTimeout(() => {
@@ -136,11 +144,11 @@ function saveReflection(text) {
   updateStreakDisplay(appState.streak);
 
   // Show "saved" indicator
-  showSaveStatus('saved');
+  showSaveStatus("saved");
 
   // Clear "saved" message after 2 seconds
   setTimeout(() => {
-    showSaveStatus('idle');
+    showSaveStatus("idle");
   }, 2000);
 }
 
@@ -168,11 +176,11 @@ function handleHistoryClose() {
  */
 function handleExportData() {
   const jsonData = exportData();
-  const blob = new Blob([jsonData], { type: 'application/json' });
+  const blob = new Blob([jsonData], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   // Create temporary download link
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
   link.download = `reflections-${getTodayDate()}.json`;
 
@@ -184,7 +192,7 @@ function handleExportData() {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 
-  showNotification('Data exported successfully!');
+  showNotification("Data exported successfully!");
 }
 
 /**
@@ -194,21 +202,21 @@ function handleExportData() {
 function handleImportData(file) {
   const reader = new FileReader();
 
-  reader.onload = function(event) {
+  reader.onload = function (event) {
     const jsonString = event.target.result;
     const success = importData(jsonString);
 
     if (success) {
-      showNotification('Data imported successfully!');
+      showNotification("Data imported successfully!");
       // Reload the app with new data
       location.reload();
     } else {
-      showNotification('Import failed. Please check the file format.', 'error');
+      showNotification("Import failed. Please check the file format.", "error");
     }
   };
 
-  reader.onerror = function() {
-    showNotification('Error reading file.', 'error');
+  reader.onerror = function () {
+    showNotification("Error reading file.", "error");
   };
 
   reader.readAsText(file);
@@ -220,17 +228,17 @@ function handleImportData(file) {
  */
 function handleClearData() {
   const confirmed = confirm(
-    'Are you sure you want to delete all your reflections? This cannot be undone.\n\n' +
-    'Consider exporting your data first.'
+    "Are you sure you want to delete all your reflections? This cannot be undone.\n\n" +
+      "Consider exporting your data first.",
   );
 
   if (confirmed) {
     const success = clearAllData();
     if (success) {
-      showNotification('All data cleared.');
+      showNotification("All data cleared.");
       location.reload();
     } else {
-      showNotification('Error clearing data.', 'error');
+      showNotification("Error clearing data.", "error");
     }
   }
 }
@@ -254,9 +262,9 @@ function getAllReflections(state) {
 
       reflections.push({
         date: date,
-        questionText: question ? question.text : 'Question not found',
+        questionText: question ? question.text : "Question not found",
         reflectionText: reflection.text,
-        lastEdited: reflection.lastEdited
+        lastEdited: reflection.lastEdited,
       });
     }
   }
@@ -273,9 +281,9 @@ function getAllReflections(state) {
  * @returns {string} Formatted date (e.g., "January 10, 2026")
  */
 function formatDate(dateString) {
-  const date = new Date(dateString + 'T00:00:00'); // Add time to prevent timezone issues
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const date = new Date(dateString + "T00:00:00"); // Add time to prevent timezone issues
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 }
 
 /**
@@ -288,9 +296,63 @@ function isToday(dateString) {
 }
 
 // Initialize app when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
 } else {
   // DOM already loaded
   initApp();
+}
+
+/**
+ * Initialize theme
+ * Checks saved preference, falls back to system preference
+ */
+function initTheme() {
+  const savedTheme = getSavedTheme();
+  const theme = savedTheme || getSystemTheme();
+  applyTheme(theme);
+
+  // Listen for system theme changes
+  if (window.matchMedia) {
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem("theme")) {
+          applyTheme(e.matches ? "dark" : "light");
+        }
+      });
+  }
+}
+
+/**
+ * Apply theme to document
+ * @param {string} theme - 'light' or 'dark'
+ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  updateThemeIcon(theme);
+}
+
+/**
+ * Update theme toggle icon
+ * @param {string} theme - Current theme
+ */
+function updateThemeIcon(theme) {
+  const icon = document.getElementById("theme-icon");
+  if (icon) {
+    icon.textContent = theme === "dark" ? "☀️" : "🌙";
+  }
+}
+
+/**
+ * Toggle between light and dark theme
+ */
+function toggleTheme() {
+  const currentTheme =
+    document.documentElement.getAttribute("data-theme") || "light";
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+
+  applyTheme(newTheme);
+  saveTheme(newTheme);
 }
