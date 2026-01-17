@@ -56,6 +56,86 @@
                 </div>
             </section>
 
+            <!-- Writing Statistics -->
+            <section id="stats-section">
+                <details id="stats-details">
+                    <summary>
+                        <span id="current-word-count">0 words</span>
+                        <span class="stats-toggle-text"
+                            >View writing stats</span
+                        >
+                    </summary>
+
+                    <div class="stats-content">
+                        <div class="stats-grid">
+                            <!-- Current reflection -->
+                            <div class="stat-card stat-card-highlight">
+                                <div class="stat-label">Current Reflection</div>
+                                <div class="stat-value" id="stat-current-words">
+                                    0
+                                </div>
+                                <div class="stat-unit">words</div>
+                            </div>
+
+                            <!-- Average words -->
+                            <div class="stat-card">
+                                <div class="stat-label">Average Length</div>
+                                <div class="stat-value" id="stat-average-words">
+                                    0
+                                </div>
+                                <div class="stat-unit">
+                                    words per reflection
+                                </div>
+                            </div>
+
+                            <!-- Total words -->
+                            <div class="stat-card">
+                                <div class="stat-label">Total Written</div>
+                                <div class="stat-value" id="stat-total-words">
+                                    0
+                                </div>
+                                <div class="stat-unit">words</div>
+                            </div>
+
+                            <!-- Total reflections -->
+                            <div class="stat-card">
+                                <div class="stat-label">Total Reflections</div>
+                                <div
+                                    class="stat-value"
+                                    id="stat-total-reflections"
+                                >
+                                    0
+                                </div>
+                                <div class="stat-unit">reflections</div>
+                            </div>
+
+                            <!-- Longest reflection -->
+                            <div class="stat-card">
+                                <div class="stat-label">Longest Reflection</div>
+                                <div class="stat-value" id="stat-longest">
+                                    0
+                                </div>
+                                <div class="stat-unit">words</div>
+                            </div>
+
+                            <!-- Days writing -->
+                            <div class="stat-card">
+                                <div class="stat-label">Days Writing</div>
+                                <div class="stat-value" id="stat-days-writing">
+                                    0
+                                </div>
+                                <div class="stat-unit">days</div>
+                            </div>
+                        </div>
+
+                        <!-- Additional context -->
+                        <div class="stats-footer">
+                            <p id="stats-context"></p>
+                        </div>
+                    </div>
+                </details>
+            </section>
+
             <footer id="footer">
                 <button id="history-toggle">View Past Reflections</button>
 

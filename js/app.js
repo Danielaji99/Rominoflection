@@ -49,6 +49,9 @@ function initApp() {
     date: getTodayDate(),
   });
 
+  // Initialize statistics display
+  updateStatsDisplay();
+
   // Set up event listeners
   setupEventListeners();
 
@@ -118,6 +121,9 @@ if (clearBtn) {
 function handleReflectionInput(event) {
   const text = event.target.value;
 
+  // Update live word count immediately
+  updateLiveWordCount(text);
+
   // Clear existing timer
   if (autoSaveTimer) {
     clearTimeout(autoSaveTimer);
@@ -142,6 +148,9 @@ function saveReflection(text) {
 
   // Update UI with new streak (if changed)
   updateStreakDisplay(appState.streak);
+
+  // Update all statistics
+  updateStatsDisplay();
 
   // Show "saved" indicator
   showSaveStatus("saved");
@@ -355,4 +364,126 @@ function toggleTheme() {
 
   applyTheme(newTheme);
   saveTheme(newTheme);
+}
+/**
+ * Update statistics display
+ * Called on init and after saving reflection
+ */
+function updateStatsDisplay() {
+  const stats = calculateStats(appState);
+  const streakStats = getStreakStats(appState);
+
+  // Update current word count (always visible)
+  updateCurrentWordCount(stats.currentWords);
+
+  // Update detailed stats
+  updateDetailedStats(stats, streakStats);
+}
+
+/**
+ * Update current word count (in collapsed summary)
+ * @param {number} wordCount - Current word count
+ */
+function updateCurrentWordCount(wordCount) {
+  const currentWordCountEl = document.getElementById("current-word-count");
+  if (currentWordCountEl) {
+    const plural = wordCount === 1 ? "word" : "words";
+    currentWordCountEl.textContent = `${wordCount} ${plural}`;
+  }
+}
+
+/**
+ * Update detailed statistics
+ * @param {object} stats - Statistics object
+ * @param {object} streakStats - Streak statistics object
+ */
+function updateDetailedStats(stats, streakStats) {
+  // Current words
+  const statCurrent = document.getElementById("stat-current-words");
+  if (statCurrent) {
+    statCurrent.textContent = formatNumber(stats.currentWords);
+  }
+
+  // Average words
+  const statAverage = document.getElementById("stat-average-words");
+  if (statAverage) {
+    statAverage.textContent = formatNumber(stats.averageWords);
+  }
+
+  // Total words
+  const statTotal = document.getElementById("stat-total-words");
+  if (statTotal) {
+    statTotal.textContent = formatNumber(stats.totalWords);
+  }
+
+  // Total reflections
+  const statReflections = document.getElementById("stat-total-reflections");
+  if (statReflections) {
+    statReflections.textContent = formatNumber(stats.totalReflections);
+  }
+
+  // Longest reflection
+  const statLongest = document.getElementById("stat-longest");
+  if (statLongest) {
+    statLongest.textContent = formatNumber(stats.longestReflection);
+  }
+
+  // Days writing
+  const statDays = document.getElementById("stat-days-writing");
+  if (statDays) {
+    statDays.textContent = formatNumber(streakStats.totalDays);
+  }
+
+  // Contextual message
+  updateStatsContext(stats, streakStats);
+}
+
+/**
+ * Update contextual stats message
+ * Provides encouraging, personalized feedback
+ * @param {object} stats - Statistics object
+ * @param {object} streakStats - Streak statistics object
+ */
+function updateStatsContext(stats, streakStats) {
+  const contextEl = document.getElementById("stats-context");
+  if (!contextEl) return;
+
+  let message = "";
+
+  if (stats.totalReflections === 0) {
+    message = "Start your first reflection to see your writing statistics.";
+  } else if (stats.totalReflections === 1) {
+    message =
+      "Your reflection journey has begun! Keep writing to build your practice.";
+  } else if (stats.currentWords > stats.averageWords) {
+    const diff = stats.currentWords - stats.averageWords;
+    message = `Today's reflection is ${diff} words longer than your average. You're diving deep!`;
+  } else if (
+    stats.currentWords > 0 &&
+    stats.currentWords < stats.averageWords
+  ) {
+    message = "Sometimes brevity is powerful. Every reflection counts.";
+  } else if (streakStats.totalDays >= 7) {
+    message = `You've been reflecting for ${streakStats.totalDays} days. That's ${formatNumber(stats.totalWords)} words of self-discovery.`;
+  } else {
+    message = `You've written ${formatNumber(stats.totalWords)} words across ${stats.totalReflections} reflections.`;
+  }
+
+  contextEl.textContent = message;
+}
+
+/**
+ * Update word count in real-time as user types
+ * Called from handleReflectionInput
+ * @param {string} text - Current textarea text
+ */
+function updateLiveWordCount(text) {
+  const wordCount = countWords(text);
+  updateCurrentWordCount(wordCount);
+
+  // Also update the detailed current words stat if stats panel is open
+  const statCurrent = document.getElementById("stat-current-words");
+  if (statCurrent) {
+    statCurrent.textContent = formatNumber(wordCount);
+  }
 }

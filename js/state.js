@@ -266,3 +266,118 @@ function getSystemTheme() {
   }
   return "light";
 }
+/**
+ * Calculate writing statistics
+ * @param {object} state - Application state
+ * @returns {object} Statistics object
+ */
+function calculateStats(state) {
+  const reflections = Object.values(state.reflections).filter(
+    (r) => r.text && r.text.trim().length > 0,
+  );
+
+  if (reflections.length === 0) {
+    return {
+      totalReflections: 0,
+      totalWords: 0,
+      averageWords: 0,
+      longestReflection: 0,
+      shortestReflection: 0,
+      currentWords: 0,
+    };
+  }
+
+  // Calculate word counts for each reflection
+  const wordCounts = reflections.map((r) => countWords(r.text));
+
+  // Total words across all reflections
+  const totalWords = wordCounts.reduce((sum, count) => sum + count, 0);
+
+  // Average words per reflection
+  const averageWords = Math.round(totalWords / reflections.length);
+
+  // Longest and shortest reflections
+  const longestReflection = Math.max(...wordCounts);
+  const shortestReflection = Math.min(...wordCounts);
+
+  // Current reflection word count
+  const todayReflection = getTodayReflection(state);
+  const currentWords = countWords(todayReflection);
+
+  return {
+    totalReflections: reflections.length,
+    totalWords,
+    averageWords,
+    longestReflection,
+    shortestReflection,
+    currentWords,
+  };
+}
+
+/**
+ * Count words in text
+ * More accurate than simple split - handles multiple spaces, punctuation
+ * @param {string} text - Text to count
+ * @returns {number} Word count
+ */
+function countWords(text) {
+  if (!text || text.trim().length === 0) {
+    return 0;
+  }
+
+  // Remove extra whitespace and split by spaces
+  // Filter out empty strings
+  const words = text
+    .trim()
+    .replace(/\s+/g, " ") // Replace multiple spaces with single space
+    .split(" ")
+    .filter((word) => word.length > 0);
+
+  return words.length;
+}
+
+/**
+ * Get writing streak statistics
+ * @param {object} state - Application state
+ * @returns {object} Streak statistics
+ */
+function getStreakStats(state) {
+  const dates = Object.keys(state.reflections)
+    .filter((date) => state.reflections[date].text.length > 0)
+    .sort();
+
+  if (dates.length === 0) {
+    return {
+      totalDays: 0,
+      firstReflectionDate: null,
+      lastReflectionDate: null,
+      daysSinceFirst: 0,
+    };
+  }
+
+  const firstDate = dates[0];
+  const lastDate = dates[dates.length - 1];
+
+  // Calculate days between first and last reflection
+  const firstDateObj = new Date(firstDate);
+  const lastDateObj = new Date(lastDate);
+  const daysSinceFirst = Math.floor(
+    (lastDateObj - firstDateObj) / (1000 * 60 * 60 * 24),
+  );
+
+  return {
+    totalDays: dates.length,
+    firstReflectionDate: firstDate,
+    lastReflectionDate: lastDate,
+    daysSinceFirst: daysSinceFirst,
+  };
+}
+
+/**
+ * Format number with commas for readability
+ * @param {number} num - Number to format
+ * @returns {string} Formatted number
+ */
+function formatNumber(num) {
+  return num.toLocaleString("en-US");
+}
